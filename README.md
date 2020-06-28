@@ -2,10 +2,11 @@ pimatic-homeduino
 =======================
 
 Plugin for using various 433 Mhz devices and sensors with a connected Arduino with
-[homeduino](https://github.com/pimatic/homeduino) sketch or directly with capable hardware like the Raspberry Pi.
+[homeduino](https://github.com/pimatic/homeduino) sketch or directly with capable hardware like the Raspberry Pi. 
+It is based on the [homeduinojs](https://github.com/pimatic/homeduinojs) driver implementation.
 
 This plugins supports all 433 MHz devices with [rfcontroljs](https://github.com/pimatic/rfcontroljs)
-[protocol implementations](https://github.com/pimatic/rfcontroljs/blob/master/protocols.md).
+[protocol implementations](https://github.com/pimatic/rfcontroljs/blob/master/protocols.md). 
 
 
 Drivers
@@ -49,7 +50,7 @@ The `transmitterPin` must be a digital pin between `2` (D2) and `13` (D13).
 ![nano-pins](https://raw.githubusercontent.com/pimatic/pimatic-homeduino/master/pins-nano.png)
 
 
-### B. Raspberry Pi with ATTiny45 / 85 Prefilter
+### B. Raspberry Pi with (optional) ATTiny45 / 85 Prefilter
 
 You can load the plugin by editing your `config.json` to include:
 
@@ -58,14 +59,14 @@ You can load the plugin by editing your `config.json` to include:
   "plugin": "homeduino",
   "driver": "gpio",
   "driverOptions": {},
-  "receiverPin": 0,
-  "transmitterPin": 4
+  "receiverPin": 17,
+  "transmitterPin": 23
 }
 ```
 
 in the `plugins` section. For all configuration options see [homeduino-config-schema](homeduino-config-schema.coffee)
 
-The pin numbers are [wiringPi pin numbers](http://wiringpi.com/pins/).
+The [pin numbers](https://raw.githubusercontent.com/pimatic/pimatic-homeduino/master/pins-raspi.md) in this case are BCM GPIO Numbers.
 
 Devices
 ------
@@ -180,7 +181,7 @@ protocol.
       "receive": true
     }
   ]
-},
+}
 ```
 ##### Shutter sensor example:
 
@@ -244,7 +245,7 @@ For weather stations like the Alecto WS-4500 you should use the weather station 
     "temperature",
     "humidity"
   ]
-},
+}
 ```
 It supports different values to display
 `rain`, `temperature`, `humidity`, `windGust`, `windDirection`, `avgAirspeed`, `lowBattery` and 

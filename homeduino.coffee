@@ -43,7 +43,7 @@ module.exports = (env) ->
 
       @framework.deviceManager.on('discover', (eventData) =>
 
-        discoveredDevices = {};
+        discoveredDevices = {}
 
         @framework.deviceManager.discoverMessage(
           'pimatic-homeduino', "Waiting for RF messages"
@@ -78,20 +78,29 @@ module.exports = (env) ->
 
             switch protocol.type
               when 'switch'
-                config = {
-                  class: 'HomeduinoRFSwitch'
-                  protocols: protocolConfig
-                }
+                if typeof event.values.state != 'undefined'
+                  config = {
+                    class: 'HomeduinoRFSwitch'
+                    protocols: protocolConfig
+                  }
               when 'dimmer'
                 config = {
                   class: 'HomeduinoRFDimmer'
                   protocols: protocolConfig
                 }
               when 'weather'
-                config = {
-                  class: 'HomeduinoRFWeatherStation'
-                  protocols: protocolConfig
-                }
+                valid = true
+                if typeof event.values.temperature != 'undefined'
+                  if event.values.temperature > 100 or event.values.temperature < -30
+                    valid = false
+                if typeof event.values.humidity != 'undefined'
+                  if event.values.humidity < 0 or event.values.humidity > 100
+                    valid = false
+                if valid
+                  config = {
+                    class: 'HomeduinoRFWeatherStation'
+                    protocols: protocolConfig
+                  }
               when 'contact'
                 config = {
                   class: 'HomeduinoRFContactSensor'
@@ -411,7 +420,7 @@ module.exports = (env) ->
           )
       if p.options.command not in _protocol.commands
         throw new Error(
-          "Protocol \"#{p.name}\" can´t handle the command \"#{p.options.command}\". "+
+          "Protocol \"#{p.name}\" can't handle the command \"#{p.options.command}\". "+
           "Available commands are: \"#{_protocol.commands.join(", ")}\""
           )
 
@@ -691,12 +700,16 @@ module.exports = (env) ->
     destroy: ->
       super()
 
+    getLowBattery: -> Promise.resolve @_lowBattery
+    getBattery: -> Promise.resolve @_battery
+
   class HomeduinoRFShutter extends env.devices.ShutterController
 
     constructor: (@config, lastState, @board, @_pluginConfig) ->
       @id = @config.id
       @name = @config.name
       @_position = lastState?.position?.value or 'stopped'
+      @rollingTime = @config.rollingTime
       @_types = {}
       for p in @config.protocols
         checkProtocolProperties(p, ["switch", "command"])
@@ -732,7 +745,7 @@ module.exports = (env) ->
       unless @config.forceSend
         if @_position is 'stopped' then return Promise.resolve()
 
-      protocols = _.clone(@config.protocols, true)
+      protocols = _.cloneDeep(@config.protocols)
       for p in protocols
         if @_types[p.name] is "command"
           p.options.command = "stop"
@@ -751,7 +764,7 @@ module.exports = (env) ->
         if position is @_position then return Promise.resolve()
       if position is 'stopped' then return @stop()
       else
-        protocols = _.clone(@config.protocols, true)
+        protocols = _.cloneDeep(@config.protocols)
         for p in protocols
           if @_types[p.name] is "command"
             p.options.command = position
