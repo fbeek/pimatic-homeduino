@@ -31,7 +31,7 @@
   },
   "configSchema": "homeduino-config-schema.coffee",
   "dependencies": {
-    "homeduino": "0.0.71"
+    "homeduino": "https://github.com/fbeek/homeduinojs.git#master"
   },
   "peerDependencies": {
     "pimatic": "0.9.*"
