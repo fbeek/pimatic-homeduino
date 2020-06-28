@@ -1,5 +1,6 @@
 pimatic-homeduino
 =======================
+*ABOUT THIS FORK: Please do not use this fork for your environment, it is a personalized version for me and my special use case and development*
 
 Plugin for using various 433 Mhz devices and sensors with a connected Arduino with
 [homeduino](https://github.com/pimatic/homeduino) sketch or directly with capable hardware like the Raspberry Pi. 
